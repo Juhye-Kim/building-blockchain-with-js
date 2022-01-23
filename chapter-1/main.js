@@ -9,7 +9,7 @@ let blockchain = [getGenesisBlock()];
  * get blockchain
  * @returns {Block[]} blockchain
  */
-function getBlockchain() {
+export function getBlockchain() {
   return blockchain;
 }
 
@@ -51,7 +51,7 @@ function getGenesisBlock() {
  * get current version of blockchain
  * @returns {string} current version
  */
-function getCurrentVersion() {
+export function getCurrentVersion() {
   const packageJson = fs.readFileSync("./package.json");
   const currentVersion = JSON.parse(packageJson).version;
 
@@ -71,7 +71,7 @@ function getCurrentTimeStamp() {
  * @param {any} blockData
  * @returns {BLock} block
  */
-function generateNextBlock(blockData) {
+export function generateNextBlock(blockData) {
   const previousBlock = getLatestBlock();
   const currentVersion = getCurrentVersion();
   const nextIndex = previousBlock.header.index + 1;
@@ -172,7 +172,7 @@ function isValidChain(blockchainToValidate) {
  * @param {Block} newBlock
  * @returns {boolean} isAdded
  */
-function addBlock(newBlock) {
+export function addBlock(newBlock) {
   if (isValidNewBlock(newBlock, getLatestBlock())) {
     blockchain.push(newBlock);
     return true;
