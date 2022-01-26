@@ -3,6 +3,8 @@ const getBlockBtn = document.getElementById("get-block-btn");
 const getVersionBtn = document.getElementById("get-version-btn");
 const mineBlockBtn = document.getElementById("mine-block-btn");
 const stopBtn = document.getElementById("stop-btn");
+const getPeersBtn = document.getElementById("get-peers-btn");
+const addPeersBtn = document.getElementById("add-peers-btn");
 
 const getBlock = () => {
   return fetch(`http://localhost:3002/blocks`)
@@ -52,7 +54,31 @@ const stop = () => {
     });
 };
 
+const getPeers = () => {
+  return fetch(`http://localhost:3002/peers`)
+    .then((res) => {
+      return res.json();
+    })
+    .then((json) => {
+      statusBox.textContent = JSON.stringify(json);
+    });
+};
+
+const addPeers = () => {
+  return fetch(`http://localhost:3002/addPeers`, {
+    method: "POST",
+  })
+    .then((res) => {
+      return res.json();
+    })
+    .then((json) => {
+      statusBox.textContent = JSON.stringify(json.msg);
+    });
+};
+
 getBlockBtn.addEventListener("click", getBlock);
 getVersionBtn.addEventListener("click", getVersion);
 mineBlockBtn.addEventListener("click", mineBlock);
 stopBtn.addEventListener("click", stop);
+getPeersBtn.addEventListener("click", getPeers());
+addPeersBtn.addEventListener("click", addPeers());

@@ -3,7 +3,7 @@ import fs from "fs";
 import { Block, BlockHeader } from "./Block.js";
 import calculateHashForBlock from "./calculateHash.js";
 
-let blockchain = [getGenesisBlock()];
+export let blockchain = [getGenesisBlock()];
 
 /**
  * get blockchain
@@ -17,7 +17,7 @@ export function getBlockchain() {
  * get latest block in blockchain
  * @returns {Block} block
  */
-function getLatestBlock() {
+export function getLatestBlock() {
   return blockchain[blockchain.length - 1];
 }
 
@@ -148,7 +148,7 @@ function isValidBlockStructure(block) {
  * @param {Block[]} blockchain
  * @returns {boolean} isValid
  */
-function isValidChain(blockchainToValidate) {
+export function isValidChain(blockchainToValidate) {
   if (
     JSON.stringify(blockchainToValidate[0] !== JSON.stringify(getGenesisBlock))
   ) {
