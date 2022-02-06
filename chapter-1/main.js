@@ -1,7 +1,7 @@
 import merkle from "merkle";
 import fs from "fs";
 import { Block, BlockHeader } from "./Block.js";
-import calculateHashForBlock from "./calculateHash.js";
+import { calculateHash, calculateHashForBlock } from "./calculateHash.js";
 
 export let blockchain = [getGenesisBlock()];
 
@@ -184,7 +184,7 @@ export function addBlock(newBlock) {
   return false;
 }
 
-export function hashMatchesDifficulty(hash, difficulty) {
+function hashMatchesDifficulty(hash, difficulty) {
   const hashBinary = hexToBinary(hash.toUpperCase());
   const requiredPrefix = "0".repeat(difficulty);
 
@@ -217,4 +217,33 @@ function hexToBinary(s) {
     else return null;
   }
   return ret;
+}
+
+function findBlock(
+  currentVersion,
+  nextIndex,
+  previousHash,
+  nextTimestamp,
+  merkleRoot,
+  difficulty
+) {
+  let nonce = 0;
+
+  while (true) {
+    const blockInfo = {
+      currentVersion,
+      nextIndex,
+      previousHash,
+      nextTimestamp,
+      merkleRoot,
+      difficulty,
+      nonce,
+    };
+    const hash = calculateHash(blockInfo);
+
+    if (hashMatchesDifficulty(hash, difficulty)) {
+      return new BlockHeader(blockInfo);
+    }
+    nonce++;
+  }
 }
