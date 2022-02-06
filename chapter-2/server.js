@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import {
   getBlockchain,
@@ -12,7 +12,7 @@ import {
 import dotenv from "dotenv";
 import cors from "cors";
 import WebSocket, { WebSocketServer } from "ws";
-import calculateHashForBlock from "../chapter-1/calculateHash.js";
+import { calculateHashForBlock } from "../chapter-1/calculateHash.js";
 import random from "random";
 
 dotenv.config();
