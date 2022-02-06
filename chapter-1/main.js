@@ -81,6 +81,7 @@ export function generateNextBlock(blockData) {
   const nextIndex = previousBlock.header.index + 1;
   const previousHash = calculateHashForBlock(previousBlock);
   const nextTimestamp = getCurrentTimeStamp();
+  const difficulty = getDifficulty(getBlockchain());
 
   const merkleTree = merkle("sha256").sync(blockData);
   const merkleRoot = merkleTree.root() || "0".repeat(64);
@@ -90,7 +91,8 @@ export function generateNextBlock(blockData) {
     nextIndex,
     previousHash,
     nextTimestamp,
-    merkleRoot
+    merkleRoot,
+    difficulty
   );
   return new Block(newBlockHeader, blockData);
 }
@@ -219,6 +221,16 @@ function hexToBinary(s) {
   return ret;
 }
 
+/**
+ * 적절한 논스값을 찾아 블록 생성하는 함수
+ * @param {*} currentVersion
+ * @param {*} nextIndex
+ * @param {*} previousHash
+ * @param {*} nextTimestamp
+ * @param {*} merkleRoot
+ * @param {*} difficulty
+ * @returns {BlockHeader}
+ */
 function findBlock(
   currentVersion,
   nextIndex,
@@ -245,5 +257,36 @@ function findBlock(
       return new BlockHeader(blockInfo);
     }
     nonce++;
+  }
+}
+
+const BLOCK_GENERATION_INTERVAL = 10; // in seconds
+const DIFFICULTY_ADJUSTMENT_INTERVAL = 10; // in blocks
+
+function getDifficulty(aBlockChain) {
+  const latestBlock = aBlockChain[aBlockChain.length - 1];
+  if (
+    latestBlock.header.index % DIFFICULTY_ADJUSTMENT_INTERVAL === 0 &&
+    latestBlock.header.index !== 0
+  ) {
+    return getAdjustedDifficulty(latestBlock, aBlockChain);
+  }
+  return latestBlock.header.difficulty;
+}
+
+function getAdjustedDifficulty(latestBlock, aBlockChain) {
+  const prevAdjustmentBlock =
+    aBlockChain[aBlockChain.length - DIFFICULTY_ADJUSTMENT_INTERVAL];
+  const timeTaken =
+    latestBlock.header.timestamp - prevAdjustmentBlock.header.timestamp;
+  const timeExpected =
+    BLOCK_GENERATION_INTERVAL * DIFFICULTY_ADJUSTMENT_INTERVAL;
+
+  if (timeTaken < timeExpected / 2) {
+    return prevAdjustmentBlock.header.difficulty + 1;
+  } else if (timeTaken > timeExpected * 2) {
+    return prevAdjustmentBlock.header.difficulty - 1;
+  } else {
+    return prevAdjustmentBlock.header.difficulty;
   }
 }
