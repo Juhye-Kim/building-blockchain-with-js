@@ -30,6 +30,8 @@ function getGenesisBlock() {
   const index = 0;
   const previousHash = "0".repeat(64);
   const timestamp = 1231006505;
+  const difficulty = 0;
+  const nonce = 0;
   const data = [
     "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks",
   ];
@@ -42,7 +44,9 @@ function getGenesisBlock() {
     index,
     previousHash,
     timestamp,
-    merkleRoot
+    merkleRoot,
+    difficulty,
+    nonce
   );
   return new Block(header, data);
 }
@@ -178,4 +182,39 @@ export function addBlock(newBlock) {
     return true;
   }
   return false;
+}
+
+export function hashMatchesDifficulty(hash, difficulty) {
+  const hashBinary = hexToBinary(hash.toUpperCase());
+  const requiredPrefix = "0".repeat(difficulty);
+
+  return hashBinary.startsWith(requiredPrefix);
+}
+
+function hexToBinary(s) {
+  const lookupTable = {
+    0: "0000",
+    1: "0001",
+    2: "0010",
+    3: "0011",
+    4: "0100",
+    5: "0101",
+    6: "0110",
+    7: "0111",
+    8: "1000",
+    9: "1001",
+    A: "1010",
+    B: "1011",
+    C: "1100",
+    D: "1101",
+    E: "1110",
+    F: "1111",
+  };
+
+  let ret = "";
+  for (let i = 0; i < s.length; i++) {
+    if (lookupTable[s[i]]) ret += lookupTable[s[i]];
+    else return null;
+  }
+  return ret;
 }
