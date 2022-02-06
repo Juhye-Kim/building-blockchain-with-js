@@ -129,6 +129,21 @@ function isValidNewBlock(newBlock, previousBlock) {
     return false;
   }
 
+  if (!isValidTimeStamp(newBlock, previousBlock)) {
+    console.log("Invalid timestamp");
+    return false;
+  }
+
+  if (
+    !hashMatchesDifficulty(
+      calculateHashForBlock(newBlock),
+      newBlock.header.difficulty
+    )
+  ) {
+    console.log(`Invalid hash: ${calculateHashForBlock(newBlock)}`);
+    return false;
+  }
+
   return true;
 }
 
@@ -137,7 +152,15 @@ function isValidNewBlock(newBlock, previousBlock) {
  * @returns {boolean} isValid
  */
 function isValidBlockStructure(block) {
-  const { version, index, previousHash, timestamp, merkleRoot } = block.header;
+  const {
+    version,
+    index,
+    previousHash,
+    timestamp,
+    merkleRoot,
+    difficulty,
+    nonce,
+  } = block.header;
   const { data } = block;
 
   return (
@@ -146,6 +169,8 @@ function isValidBlockStructure(block) {
     typeof previousHash === "string" &&
     typeof timestamp === "number" &&
     typeof merkleRoot === "string" &&
+    typeof difficulty === "number" &&
+    typeof nonce === "number" &&
     typeof data === "object"
   );
 }
@@ -184,6 +209,13 @@ export function addBlock(newBlock) {
     return true;
   }
   return false;
+}
+
+function isValidTimeStamp(newBlock, prevBlock) {
+  return (
+    prevBlock.header.timestamp - 60 < newBlock.header.timestamp &&
+    newBlock.header.timestamp - 60 < getCurrentTimeStamp()
+  );
 }
 
 function hashMatchesDifficulty(hash, difficulty) {
