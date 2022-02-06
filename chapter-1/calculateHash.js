@@ -9,9 +9,17 @@ import CryptoJS from "crypto-js";
  * @param {string} merkleRoot
  * @returns {string} hash
  */
-function calculateHash(version, index, previousHash, timestamp, merkleRoot) {
+export function calculateHash(
+  version,
+  index,
+  previousHash,
+  timestamp,
+  merkleRoot,
+  difficulty,
+  nonce
+) {
   return CryptoJS.SHA256(
-    version + index + previousHash + timestamp + merkleRoot
+    version + index + previousHash + timestamp + merkleRoot + difficulty + nonce
   )
     .toString()
     .toUpperCase();
@@ -22,8 +30,24 @@ function calculateHash(version, index, previousHash, timestamp, merkleRoot) {
  * @param {Block} block
  * @returns {string} hash
  */
-export default function calculateHashForBlock(block) {
-  const { version, index, previousHash, timestamp, merkleRoot } = block.header;
+export function calculateHashForBlock(block) {
+  const {
+    version,
+    index,
+    previousHash,
+    timestamp,
+    merkleRoot,
+    difficulty,
+    nonce,
+  } = block.header;
 
-  return calculateHash(version, index, previousHash, timestamp, merkleRoot);
+  return calculateHash(
+    version,
+    index,
+    previousHash,
+    timestamp,
+    merkleRoot,
+    difficulty,
+    nonce
+  );
 }
